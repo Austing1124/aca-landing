@@ -1,69 +1,96 @@
+<!-- FILE: index.html (single-page, black + green theme) -->
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ACA Health Insurance Quote — Fast, Free, Local</title>
-<meta name="description" content="Check your 2025 ACA/Marketplace savings in 60 seconds. Licensed help. Fast callback.">
+<title>ACA Health Insurance – Fast Quote</title>
+<meta name="description" content="Check your 2025 ACA/Marketplace savings. One quick form, fast callback.">
 <style>
-  :root{--bg:#0b1220;--card:#111a2b;--accent:#3b82f6;--text:#e6edf7;--sub:#9fb3d1;--ok:#22c55e;--err:#ef4444}
-  *{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 700px at 80% -10%,#1c2640 0%,var(--bg) 60%);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica Neue,Arial}
-  .wrap{max-width:920px;margin:0 auto;padding:32px 16px 80px}
-  header{margin:18px 0 22px}.h1{font-size:clamp(28px,4vw,40px);font-weight:800;margin:0 0 8px}.sub{color:var(--sub)}
-  .card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:22px;box-shadow:0 12px 50px rgba(0,0,0,.35)}
-  label{display:block;font-weight:600;margin:6px 0 6px}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:720px){.row{grid-template-columns:1fr}}
-  input,select{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,.14);background:#0f1729;color:var(--text);outline:none}
-  input::placeholder{color:#6c80a7}.checkbox{display:flex;gap:10px;align-items:flex-start}
-  .btn{background:var(--accent);color:#fff;border:none;padding:14px 18px;border-radius:12px;font-weight:800;cursor:pointer;width:100%}
-  .btn:disabled{filter:grayscale(.5) brightness(.85);cursor:not-allowed}
-  .note{font-size:12px;color:var(--sub)}.ok{color:var(--ok)}.err{color:var(--err)}
+  :root{
+    --bg:#000000;           /* pure black */
+    --bg2:#0b0b0b;          /* near black */
+    --card:#0f1115;         /* card */
+    --accent:#22c55e;       /* green */
+    --accent2:#16a34a;      /* deeper green */
+    --text:#e9f7ef;         /* light text */
+    --sub:#a3a3a3;          /* muted */
+    --err:#ef4444;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1100px 600px at 80% -10%,#0d0f12 0%,var(--bg) 60%);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica Neue,Arial}
+  .wrap{max-width:940px;margin:0 auto;padding:42px 16px 80px}
+  header{margin:0 0 22px}
+  h1{font-size:clamp(30px,4.4vw,44px);line-height:1.05;margin:0 0 10px;background:linear-gradient(90deg,#d1fae5, #86efac 40%, #34d399 80%);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--sub)}
+
+  .card{background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.02));
+        border:1px solid rgba(34,197,94,.45);border-radius:18px;padding:24px;box-shadow:0 18px 60px rgba(34,197,94,.10)}
+
+  label{display:block;font-weight:700;margin:6px 0 6px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.row{grid-template-columns:1fr}}
+
+  input,select{width:100%;padding:12px 14px;border-radius:12px;border:1px solid rgba(34,197,94,.25);
+    background:linear-gradient(180deg,#0a0d0f,#090b0d);color:var(--text);outline:none;transition:border-color .15s, box-shadow .15s}
+  input::placeholder{color:#7a7a7a}
+  input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(34,197,94,.25)}
+
+  .btn{display:inline-block;background:linear-gradient(180deg,var(--accent),var(--accent2));color:#041007;border:1px solid rgba(34,197,94,.65);
+       padding:16px 18px;border-radius:14px;font-weight:900;cursor:pointer;width:100%;letter-spacing:.2px;transition:filter .15s, transform .04s}
+  .btn:hover{filter:brightness(1.08)}
+  .btn:active{transform:translateY(1px)}
+  .btn[disabled]{filter:grayscale(.6) brightness(.85);cursor:not-allowed}
+
+  .note{font-size:12px;color:var(--sub)}
+  .ok{color:var(--accent)}
+  .err{color:var(--err)}
   .hide{display:none}
-  footer{margin-top:14px}
+  footer{margin-top:16px;color:#888}
+
+  /* checkbox in brand color */
+  input[type="checkbox"]{accent-color:var(--accent)}
+  a{color:#86efac;text-decoration:none}
+  a:hover{text-decoration:underline}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="h1">Free ACA Health Insurance Quote in <span id="city">Your Area</span></div>
+    <h1>Free ACA Health Insurance Quote in Your Area</h1>
     <div class="sub">Licensed help • $0–low-cost options • Check your 2025 savings in 60 seconds</div>
   </header>
 
   <div class="card">
-    <form id="leadForm" autocomplete="on" novalidate>
+    <form id="form" autocomplete="on" novalidate>
       <div class="row">
-        <div><label>First name</label><input required name="first_name" placeholder="Jane"/></div>
-        <div><label>Last name</label><input required name="last_name" placeholder="Doe"/></div>
+        <div><label>First name</label><input required name="first_name" placeholder="Jane"></div>
+        <div><label>Last name</label><input required name="last_name" placeholder="Doe"></div>
       </div>
       <div class="row">
-        <div><label>Mobile phone</label><input required name="phone" inputmode="tel" placeholder="207-555-1234"/></div>
-        <div><label>Email <span class="note">(optional)</span></label><input name="email" inputmode="email" placeholder="you@email.com"/></div>
+        <div><label>Date of birth</label><input required name="dob" type="date"></div>
+        <div><label>Estimated yearly income</label><input required name="income" inputmode="numeric" placeholder="e.g., 40,000"></div>
       </div>
       <div class="row">
-        <div><label>ZIP code</label><input required name="zip" inputmode="numeric" pattern="\\d{5}" placeholder="33901"/></div>
-        <div class="row">
-          <div><label>Adults</label><select name="adults"><option>1</option><option>2</option><option>3</option><option>4+</option></select></div>
-          <div><label>Kids</label><select name="kids"><option>0</option><option>1</option><option>2</option><option>3+</option></select></div>
-        </div>
+        <div><label>ZIP code</label><input required name="zip" inputmode="numeric" pattern="\d{5}" placeholder="33901"></div>
+        <div><label>Mobile phone</label><input required name="phone" inputmode="tel" placeholder="207-555-1234"></div>
       </div>
-      <div><label>Timeline</label>
-        <select name="timeline">
-          <option>Today</option><option>This week</option><option>This month</option>
-        </select>
+      <div class="row">
+        <div><label>Email <span class="note">(optional)</span></label><input name="email" inputmode="email" placeholder="you@email.com"></div>
+        <div></div>
       </div>
 
       <!-- honeypot -->
       <div class="hide"><input name="website" placeholder="leave blank"></div>
 
-      <div class="checkbox" style="margin:10px 0 8px">
+      <div class="note" style="margin:12px 0 8px;display:flex;gap:10px;align-items:flex-start">
         <input id="consent" type="checkbox" required>
-        <label for="consent" class="note">
-          By clicking “Get My Quote,” you agree <strong>{Your Brand}</strong> may contact you about ACA/Marketplace plans by
-          call or text (including autodialer/prerecorded). Msg&amp;data rates may apply. Reply <strong>STOP</strong> to opt out.
-          Consent not required to obtain services. See our <a href="#" target="_blank">Privacy Policy</a>.
+        <label for="consent">
+          By clicking “Get My Quote,” you agree <strong>{Your Brand}</strong> may contact you about ACA/Marketplace plans by call or text (including autodialer/prerecorded). Msg&data rates may apply. Reply <strong>STOP</strong> to opt out. Consent not required to obtain services. See our <a href="#" target="_blank">Privacy Policy</a>.
         </label>
       </div>
 
-      <button id="submitBtn" class="btn">Get My Quote</button>
-      <div id="msg" class="note" style="margin-top:10px"></div>
+      <button class="btn" id="submitBtn">Get My Quote</button>
+      <div id="msg" class="note" style="margin-top:12px"></div>
     </form>
   </div>
 
@@ -71,57 +98,47 @@
 </div>
 
 <script>
-  // 👉 Replace this with your ngrok or API host
-  const API_URL = "https://YOUR-RESERVED.ngrok.app/submit";
+  const API_URL = "https://myapp.ngrok.io.ngrok.dev/submit";
 
-  const form = document.getElementById('leadForm');
-  const btn  = document.getElementById('submitBtn');
+
+  const form = document.getElementById('form');
   const msg  = document.getElementById('msg');
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    msg.textContent = ""; btn.disabled = true;
-
-    const data = Object.fromEntries(new FormData(form).entries());
-    if (data.website) { btn.disabled = false; return; } // bot trap
-    const consentText = document.querySelector('label[for=\"consent\"]').innerText.trim();
+  form.addEventListener('submit', async (e)=>{
+    e.preventDefault(); msg.textContent='';
+    const fd = new FormData(form); const data = Object.fromEntries(fd.entries());
+    if (data.website) return; // bot trap
+    if (!document.getElementById('consent').checked){ msg.innerHTML = '<span class="err">Please agree to the consent to continue.</span>'; return; }
 
     const payload = {
       first_name: data.first_name?.trim(),
       last_name:  data.last_name?.trim(),
       phone:      data.phone?.trim(),
-      email:      data.email?.trim() || "",
+      email:      data.email?.trim() || '',
       zip:        data.zip?.trim(),
-      adults:     data.adults || "1",
-      kids:       data.kids   || "0",
-      timeline:   data.timeline || "Today",
-      consent_text: consentText,
+      dob:        data.dob || '',
+      income:     data.income || '',
+      consent_text: document.querySelector('label[for="consent"]').innerText.trim(),
       consent_ts_client: new Date().toISOString(),
-      source: "landing",
+      source: 'landing-single',
       user_agent: navigator.userAgent
     };
 
-    try {
-      const r = await fetch(API_URL, {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(payload)
-      });
+    for (const k of ['first_name','last_name','phone','zip','dob','income']){
+      if(!payload[k]){ msg.innerHTML='<span class="err">Please complete all required fields.</span>'; return; }
+    }
+
+    try{
+      const r = await fetch(API_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
       const j = await r.json();
-      if (r.ok && j.status === "ok") {
-        msg.innerHTML = '<span class=\"ok\">Thanks! We\\'ll call you in about 5 minutes.</span>';
+      if (r.ok && j.status==='ok'){
+        msg.innerHTML = '<span class="ok">Thanks! We\'ll call you shortly to review options.</span>';
         form.reset();
       } else {
-        msg.innerHTML = '<span class=\"err\">Something went wrong. Please call us directly.</span>';
+        msg.innerHTML = '<span class="err">Something went wrong. Please call us directly.</span>';
       }
-    } catch(err){
-      msg.innerHTML = '<span class=\"err\">Network error. Please call us directly.</span>';
-    } finally {
-      btn.disabled = false;
-    }
+    }catch(err){ msg.innerHTML = '<span class="err">Network error. Please try again.</span>'; }
   });
 </script>
-
-<!-- Place your Google Ads conversion + Meta Pixel here if needed -->
 </body>
 </html>

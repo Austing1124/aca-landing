@@ -145,6 +145,23 @@
       const j = await r.json();
       if (r.ok && j.status==='ok'){
         msg.innerHTML = '<span class="ok">Thanks! We\'ll call you shortly to review options.</span>';
+        <!-- Event snippet for Submit lead form conversion page
+In your html page, add the snippet and call gtag_report_conversion when someone clicks on the chosen link or button. -->
+<script>
+function gtag_report_conversion(url) {
+  var callback = function () {
+    if (typeof(url) != 'undefined') {
+      window.location = url;
+    }
+  };
+  gtag('event', 'conversion', {
+      'send_to': 'AW-16462837751/XIciCMT2ko8bEPfvi6o9',
+      'event_callback': callback
+  });
+  return false;
+}
+</script>
+
         form.reset();
       } else {
         msg.innerHTML = '<span class="err">Something went wrong. Please call us directly.</span>';

@@ -91,10 +91,25 @@
       </div>
       <div class="row">
         <div><label>ZIP code</label><input required name="zip" inputmode="numeric" pattern="\d{5}" maxlength="5" placeholder="33901"></div>
-        <div><label>Mobile phone</label><input required name="phone" inputmode="tel" autocomplete="tel" placeholder="888-888-8888"></div>
+
+        <!-- PHONE: required, digits-only, exactly 10 -->
+        <div>
+          <label>Mobile phone</label>
+          <input
+            required
+            name="phone"
+            inputmode="tel"
+            autocomplete="tel"
+            placeholder="888-888-8888"
+            pattern="\d{10}"
+            maxlength="10"
+            oninput="this.value=this.value.replace(/[^0-9]/g,'').slice(0,10)"
+          >
+        </div>
       </div>
       <div class="row">
-        <div><label>Email <span class="note">(optional)</span></label><input name="email" inputmode="email" autocomplete="email" placeholder="you@email.com"></div>
+        <!-- EMAIL: now required, use email type -->
+        <div><label>Email</label><input required type="email" name="email" inputmode="email" autocomplete="email" placeholder="you@email.com"></div>
         <div></div>
       </div>
 
@@ -153,12 +168,27 @@
       user_agent: navigator.userAgent
     };
 
-    // basic requireds
-    for (const k of ['first_name','last_name','phone','zip','dob','income']){
+    // basic requireds (email now required)
+    for (const k of ['first_name','last_name','phone','email','zip','dob','income']){
       if (!payload[k]) {
         msg.innerHTML = '<span class="err">Please complete all required fields.</span>';
         return;
       }
+    }
+
+    // phone must be exactly 10 digits
+    const phoneDigits = payload.phone.replace(/\D/g, '');
+    if (phoneDigits.length !== 10) {
+      msg.innerHTML = '<span class="err">Please enter a 10-digit mobile number.</span>';
+      return;
+    }
+    payload.phone = phoneDigits;
+
+    // basic email check (type="email" helps, this is an extra guard)
+    const emailOK = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email);
+    if (!emailOK) {
+      msg.innerHTML = '<span class="err">Please enter a valid email address.</span>';
+      return;
     }
 
     try {

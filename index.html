@@ -132,11 +132,26 @@
 </div>
 
 <script>
-  /* Your backend endpoint */
   const API_URL = "https://myapp.ngrok.io.ngrok.dev/submit";
-
   const form = document.getElementById('form');
   const msg  = document.getElementById('msg');
+  const btn  = document.getElementById('submitBtn');
+
+  // prevent instant duplicate submits (same phone+dob+zip) for 1 hour
+  function recentLocalDuplicate(key) {
+    try {
+      const raw = localStorage.getItem("last_submit_key");
+      const ts  = Number(localStorage.getItem("last_submit_ts") || 0);
+      if (raw === key && Date.now() - ts < 60 * 60 * 1000) return true;
+    } catch(_) {}
+    return false;
+  }
+  function stampLocal(key){
+    try {
+      localStorage.setItem("last_submit_key", key);
+      localStorage.setItem("last_submit_ts", String(Date.now()));
+    } catch(_) {}
+  }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -145,19 +160,17 @@
     const fd = new FormData(form);
     const data = Object.fromEntries(fd.entries());
 
-    // bot trap
-    if (data.website) return;
-
-    // explicit consent
+    if (data.website) return; // honeypot
     if (!document.getElementById('consent').checked) {
       msg.innerHTML = '<span class="err">Please agree to the consent to continue.</span>';
       return;
     }
 
+    // normalize / validate
     const payload = {
       first_name: (data.first_name || '').trim(),
       last_name:  (data.last_name  || '').trim(),
-      phone:      (data.phone      || '').trim(),
+      phone:      (data.phone      || '').replace(/\D/g,'').slice(0,10),
       email:      (data.email      || '').trim(),
       zip:        (data.zip        || '').trim(),
       dob:        data.dob || '',
@@ -168,29 +181,28 @@
       user_agent: navigator.userAgent
     };
 
-    // basic requireds (email now required)
     for (const k of ['first_name','last_name','phone','email','zip','dob','income']){
-      if (!payload[k]) {
-        msg.innerHTML = '<span class="err">Please complete all required fields.</span>';
-        return;
-      }
+      if (!payload[k]) { msg.innerHTML = '<span class="err">Please complete all required fields.</span>'; return; }
+    }
+    if (payload.phone.length !== 10){
+      msg.innerHTML = '<span class="err">Please enter a 10-digit mobile number.</span>'; return;
+    }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(payload.email)){
+      msg.innerHTML = '<span class="err">Please enter a valid email address.</span>'; return;
+    }
+    if (!/^\d{5}$/.test(payload.zip)){
+      msg.innerHTML = '<span class="err">Please enter a 5-digit ZIP code.</span>'; return;
     }
 
-    // phone must be exactly 10 digits
-    const phoneDigits = payload.phone.replace(/\D/g, '');
-    if (phoneDigits.length !== 10) {
-      msg.innerHTML = '<span class="err">Please enter a 10-digit mobile number.</span>';
+    // client-side light dedupe guard
+    const localKey = [payload.phone, payload.dob, payload.zip].join('|');
+    if (recentLocalDuplicate(localKey)){
+      msg.innerHTML = '<span class="err">We already received a recent request with this info. Please try again later.</span>';
       return;
     }
-    payload.phone = phoneDigits;
 
-    // basic email check (type="email" helps, this is an extra guard)
-    const emailOK = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email);
-    if (!emailOK) {
-      msg.innerHTML = '<span class="err">Please enter a valid email address.</span>';
-      return;
-    }
-
+    // submit
+    btn.disabled = true;
     try {
       const r = await fetch(API_URL, {
         method: 'POST',
@@ -200,19 +212,29 @@
       const j = await r.json();
 
       if (r.ok && j.status === 'ok') {
+        stampLocal(localKey);
         msg.innerHTML = '<span class="ok">Thanks! We\'ll call you shortly to review options.</span>';
-
-        /* Fire Google Ads conversion */
-        gtag('event', 'conversion', {
-          'send_to': 'AW-16462837751/XIciCMT2ko8bEPfvi6o9'
-        });
-
+        // fire Google Ads conversion ONLY on real, accepted lead
+        gtag('event', 'conversion', { 'send_to': 'AW-16462837751/XIciCMT2ko8bEPfvi6o9' });
         form.reset();
+
+      } else if (j.status === 'out_of_geo') {
+        msg.innerHTML = '<span class="err">Sorry — at the moment we only serve Florida, Georgia, and Texas.</span>';
+
+      } else if (j.status === 'duplicate') {
+        msg.innerHTML = `<span class="err">Looks like we already received a recent request from this number. Please try again in ${j.cooldown_hours || 24} hours.</span>`;
+
+      } else if (j.status === 'invalid') {
+        msg.innerHTML = '<span class="err">Please double-check your details and try again.</span>';
+
       } else {
         msg.innerHTML = '<span class="err">Something went wrong. Please call us directly.</span>';
       }
+
     } catch (err) {
       msg.innerHTML = '<span class="err">Network error. Please try again.</span>';
+    } finally {
+      btn.disabled = false; // re-enable if not accepted
     }
   });
 </script>

@@ -246,11 +246,24 @@
     btn.disabled = true;
     try {
       const r = await fetch(API_URL, {
+      console.log('➡️ Sent payload', payload);
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      const j = await r.json();
+    let j = {};
+    try {
+      j = await r.json();
+      console.log("✅ Got response:", j);
+    } catch (err) {
+      console.error("❌ Failed to parse JSON:", err);
+      msg.innerHTML = `
+        <span class="err" style="font-size:20px;display:block;text-align:center;margin-top:12px;">
+          Server returned an invalid response. Please try again later.
+        </span>`;
+      return;
+    }
+
 
     if (r.ok && j.status === 'ok') {
       stampLocal(localKey);

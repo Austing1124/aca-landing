@@ -253,11 +253,20 @@
       const j = await r.json();
 
       if (r.ok && j.status === 'ok') {
-        stampLocal(localKey);
-        msg.innerHTML = '<span class="ok">Thanks! We\'ll call you shortly to review options.</span>';
-        // fire Google Ads conversion ONLY on real, accepted lead
-        gtag('event', 'conversion', { 'send_to': 'AW-16462837751/XIciCMT2ko8bEPfvi6o9' });
-        form.reset();
+  stampLocal(localKey);
+  msg.innerHTML = '<span class="ok" style="font-size:22px;font-weight:700;display:block;text-align:center;margin-top:10px;">Thanks! We\'ll call you shortly to review options.</span>';
+
+  // fire Google Ads conversion ONLY on real, accepted lead
+  gtag('event', 'conversion', { 'send_to': 'AW-16462837751/XIciCMT2ko8bEPfvi6o9' });
+
+  // fire your second conversion event
+  gtag('event', 'conversion_event_submit_lead_form_2', {
+    // optional: you can add event parameters here if needed
+  });
+
+  form.reset();
+}
+
 
       } else if (j.status === 'out_of_geo') {
         msg.innerHTML = '<span class="err">Sorry — at the moment we only serve Florida, Georgia, and Texas.</span>';

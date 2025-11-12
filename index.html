@@ -191,6 +191,17 @@
             Thanks! Agent Austin We’ll call you shortly to review options.
           </span>`;
 
+        // after showing the thank-you message…
+      try {
+        if (typeof gtag === 'function') {
+          gtag('event', 'conversion', { send_to: 'AW-16462837751/XIciCMT2ko8bEPfvi6o9' });
+          gtag('event', 'conversion_event_submit_lead_form_2');   // <— your extra one
+        }
+      } catch (e) {
+        console.debug('gtag error:', e); // ignore if blocked/not loaded
+      }
+
+
         // Fire Google events safely
         try {
           if (typeof gtag === 'function') {

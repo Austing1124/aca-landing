@@ -255,26 +255,27 @@
     if (r.ok && j.status === 'ok') {
       stampLocal(localKey);
 
-      // show the thank-you message FIRST
-      msg.innerHTML = '<span class="ok" style="font-size:22px;font-weight:700;display:block;text-align:center;margin-top:10px;">Thanks! We\'ll call you shortly to review options.</span>';
+      // show message first
+      msg.innerHTML = `
+        <span class="ok" style="font-size:22px;font-weight:700;display:block;text-align:center;margin-top:10px;">
+          Thanks! We’ll call you shortly to review options.
+        </span>`;
 
+      // fire Google Ads safely
       try {
-        // fire your existing conversion
-        gtag('event', 'conversion', {
-          'send_to': 'AW-16462837751/XIciCMT2ko8bEPfvi6o9'
-        });
-
-        // fire your additional conversion
-        gtag('event', 'conversion_event_submit_lead_form_2', {
-        // optional: add parameters here if you want
-        });
-
+        if (typeof gtag === 'function') {
+          gtag('event', 'conversion', { 'send_to': 'AW-16462837751/XIciCMT2ko8bEPfvi6o9' });
+          gtag('event', 'conversion_event_submit_lead_form_2');
+        } else {
+          console.warn('⚠️ gtag not loaded yet.');
+        }
       } catch (e) {
         console.debug('gtag error:', e);
       }
 
       form.reset();
     }
+
 
       } else if (j.status === 'out_of_geo') {
         msg.innerHTML = '<span class="err">Sorry — at the moment we only serve Florida, Georgia, and Texas.</span>';
